@@ -9,6 +9,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Pokedex_API.Context;
+using Pokedex_API.Controllers;
+using Pokedex_API.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +30,8 @@ namespace Pokedex_API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
+            services.AddScoped<PokemonSeed>();
             services.AddDbContextPool<AppDBContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("Default")));
 
@@ -47,7 +51,7 @@ namespace Pokedex_API
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Pokedex_API v1"));
             }
-
+            app.UseCors(option => option.AllowAnyOrigin());
             app.UseHttpsRedirection();
 
             app.UseRouting();

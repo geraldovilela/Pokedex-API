@@ -1,10 +1,6 @@
-﻿using System;
+﻿using PokeApiNet;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-
-using RestEase;
-
 
 namespace Pokedex_API.Services
 {
@@ -12,13 +8,35 @@ namespace Pokedex_API.Services
     {
         public PokemonSeed()
         {
-            
+
         }
 
-        public void GetPokemonData()
+        public async Task<List<Context.Entities.Pokemon>> GetPokemonData()
         {
-            string baseURL = "https://pokeapi.co/api/v2/pokemon";
-            //var _client = RestClient.For<Pokemon>(baseURL);
+            List<Context.Entities.Pokemon> pokemons = new List<Context.Entities.Pokemon>();
+            for (int i = 1; i <= 12; i++)
+            {
+                PokeApiClient client = new PokeApiClient();
+
+                PokeApiNet.Pokemon p = await client.GetResourceAsync<PokeApiNet.Pokemon>(i);
+
+                var newP = new Context.Entities.Pokemon()
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Height = p.Height,
+                    Weight = p.Weight,
+                    BaseExperience = p.BaseExperience,
+                    Order = p.Order,
+                    FrontMale = p.Sprites.FrontDefault,
+                    BackMale = p.Sprites.BackDefault,
+                    IsDefault = p.IsDefault,
+
+                };
+
+                pokemons.Add(newP);
+            }
+            return pokemons;
         }
     }
 }
